@@ -43,3 +43,26 @@ body {
     text-wrap: balance;
   }
 }
+
+.no-selected {
+  filter: brightness(0) saturate(100%) invert(81%) sepia(23%)
+    saturate(7154%) hue-rotate(189deg) brightness(90%) contrast(98%);
+}
+
+.selected {
+  filter: brightness(0) saturate(100%) invert(17%) sepia(16%)
+    saturate(2344%) hue-rotate(170deg) brightness(95%) contrast(86%);
+  stroke: white;
+}
+
+path {
+  cursor: pointer;
+}
+
+#city_name {
+  font-size: 20px;
+  color: #1e3a58;
+  border-bottom: 1px solid #1e3a58;
+  text-align: center;
+  margin-bottom: 16px;
+}

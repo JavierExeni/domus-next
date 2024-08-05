@@ -1,4 +1,5 @@
 import { BannerMobileFilterForm } from "./BannerMobileFilterForm";
+import { BannerFormFilter } from "./BannerFormFilter";
 export const Banner = () => {
   return (
     <>
@@ -24,6 +25,9 @@ export const Banner = () => {
               </div>
               <span className="hidden lg:block h-[2px] w-full bg-[#fff]"></span>
             </div>
+          </div>
+          <div className="hidden lg:block m-auto py-4 px-4 bg-[#ffffff59] rounded-xl sm:border border-[#ffffff2e] shadow-md backdrop-blur-[6.5px]">
+            <BannerFormFilter />
           </div>
         </div>
       </div>

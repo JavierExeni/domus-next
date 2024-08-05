@@ -1,6 +1,7 @@
 import { Property } from "@/types";
 import { PropertySocialButtons } from "../properties/PropertySocialButtons";
-import { FaLocationDot, FaMapLocationDot, FaShareNodes } from "react-icons/fa6";
+import { FaLocationDot, FaShareNodes } from "react-icons/fa6";
+import { PropertyMap } from "./PropertyMap";
 
 interface Props {
   property: Property;
@@ -29,14 +30,7 @@ export const PropertyProfile = ({ property }: Props) => {
         <div>
           <PropertySocialButtons />
 
-          <button
-            type="button"
-            aria-label="map button"
-            className="text-white w-full max-h-[40px] bg-[#1e3a58] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center flex justify-center gap-2 items-center mt-3"
-          >
-            <FaMapLocationDot />
-            <span> Ver Mapa </span>
-          </button>
+          <PropertyMap property={property} />
 
           {/* If the user is logged in */}
           <button

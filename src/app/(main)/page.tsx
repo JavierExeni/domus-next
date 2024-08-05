@@ -7,7 +7,7 @@ export default function Home() {
       <ContractType />
       <WeekOffers />
       <CategoryGrid />
-      {/* <OurAgents /> */}
+      <OurAgents />
     </>
   );
 }

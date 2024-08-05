@@ -13,6 +13,7 @@ export * from "./agents/AgentTopFilters";
 export * from "./property/PropertyProfile";
 export * from "./property/PropertyDetail";
 export * from "./property/PropertyFeatures";
+export * from "./property/PropertyMap";
 export * from "./property/Gallery";
 export * from "./property/GalleryGrid";
 export * from "./property/GalleryList";
