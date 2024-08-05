@@ -1,7 +1,9 @@
+import { AgentList } from "@/components";
+
 export default async function AgentsPage() {
   return (
-    <div>
-      <h1>Hello Agents</h1>
+    <div className="w-[90%] md:w-[80%] m-auto py-4 lg:!mb-10">
+      <AgentList />
     </div>
   );
 }

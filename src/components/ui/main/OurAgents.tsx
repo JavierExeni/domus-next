@@ -1,14 +1,15 @@
-import React from 'react'
-import { Title } from './Title'
-import { getAgentList } from '@/services';
+import { Employee } from "@/types";
+import { Title } from "./Title";
+import { getAgentList } from "@/services";
+import { AgentsCarousel } from "@/components/agents/AgentsCarousel";
 
 export const OurAgents = async () => {
-  const agents = await getAgentList();
+  const agents: Employee[] = await getAgentList();
 
-  console.log(agents)
   return (
-    <div className="w-[80%] mx-auto pb-28">
-        <Title title='Nuestros asesores inmobiliarios' />
+    <div className="w-[90%] lg:w-[80%] mx-auto pb-28">
+      <Title title="Nuestros asesores inmobiliarios" />
+      <AgentsCarousel agents={agents} />
     </div>
-  )
-}
+  );
+};

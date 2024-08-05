@@ -1,4 +1,7 @@
-import { TopMenu } from "@/components";
+import { Footer, TopMenu } from "@/components";
+
+import { PrimeReactProvider } from "primereact/api";
+import Tailwind from "primereact/passthrough/tailwind";
 
 export default function MainLayout({
   children,
@@ -7,10 +10,11 @@ export default function MainLayout({
 }) {
   return (
     <main className="min-h-screen bg-white">
-      <TopMenu />
-      <div className="flex min-h-screen flex-col items-center justify-between relative text-[#1e3a58]">
-        {children}
-      </div>
+      <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}>
+        <TopMenu />
+        <div className="min-h-screen relative text-[#1e3a58]">{children}</div>
+      </PrimeReactProvider>
+      <Footer />
     </main>
   );
 }

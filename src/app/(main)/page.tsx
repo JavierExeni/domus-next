@@ -1,4 +1,4 @@
-import { Banner, CategoryGrid, ContractType, WeekOffers } from "@/components";
+import { Banner, CategoryGrid, ContractType, OurAgents, WeekOffers } from "@/components";
 
 export default function Home() {
   return (
@@ -7,6 +7,7 @@ export default function Home() {
       <ContractType />
       <WeekOffers />
       <CategoryGrid />
+      {/* <OurAgents /> */}
     </>
   );
 }

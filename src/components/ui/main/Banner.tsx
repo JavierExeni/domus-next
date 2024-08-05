@@ -1,3 +1,4 @@
+import { BannerMobileFilterForm } from "./BannerMobileFilterForm";
 export const Banner = () => {
   return (
     <>
@@ -19,13 +20,7 @@ export const Banner = () => {
                 <span className="w-full m-auto rounded-full text-center px-3 py-2 bg-[#1e3a58] text-white hidden lg:block lg:w-[250px] cursor-pointer">
                   ¿Qué estás búscando?
                 </span>
-                <button
-                  type="button"
-                  aria-label="filter button"
-                  className="rounded-full p-3 bg-[#1e3a58] text-white lg:hidden"
-                >
-                  <i className="fa-solid fa-sliders"></i>
-                </button>
+                <BannerMobileFilterForm />
               </div>
               <span className="hidden lg:block h-[2px] w-full bg-[#fff]"></span>
             </div>
