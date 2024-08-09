@@ -1,11 +1,19 @@
+"use client";
 import { Property } from "@/types";
 import { PropertyFeatures } from "./PropertyFeatures";
+import { useEffect, useState } from "react";
+import useUserInfo from "@/hooks/useUserInfo";
+import ReduxProviders from "@/providers/redux-provider";
+import ContactForm from "../ui/contact/ContactForm";
 
 interface Props {
   property: Property;
 }
 
 export const PropertyDetail = ({ property }: Props) => {
+
+  const { isLogged } = useUserInfo();
+
   return (
     <div className="grid lg:grid-cols-[1fr_auto] gap-3 lg:!gap-5">
       <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -14,10 +22,13 @@ export const PropertyDetail = ({ property }: Props) => {
         </h5>
         <div className="grid md:grid-cols-2 gap-3">
           <div className="flex flex-col gap-3">
-            <div className="grid md:grid-cols-2">
-              <p>Código :</p>
-              <p className="font-semibold">{property.code || "Sin código"}</p>
-            </div>
+            {/* si es admin mostrar esta columna */}
+            {isLogged && (
+              <div className="grid md:grid-cols-2">
+                <p>Código :</p>
+                <p className="font-semibold">{property.code || "Sin código"}</p>
+              </div>
+            )}
             <div className="grid md:grid-cols-2">
               <p>Precio :</p>
               <p className="font-semibold">$us. {property.price}</p>
@@ -70,6 +81,9 @@ export const PropertyDetail = ({ property }: Props) => {
 
         <PropertyFeatures />
       </div>
+      {/* si esta logeado mandar el usuario, sino mandar null */}
+      <ContactForm userContact={isLogged ? property.created_by : null}></ContactForm>
+      {/* <ContactForm userContact={property.created_by}></ContactForm> */}
 
       {/* formulario de contacto */}
       {/* @if (property && agent) {

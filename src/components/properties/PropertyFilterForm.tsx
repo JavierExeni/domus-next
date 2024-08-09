@@ -6,31 +6,42 @@ import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { Slider } from "primereact/slider";
 
-import { useState } from "react";
-import { getPropertyCategories } from "@/types";
+import { useEffect, useState } from "react";
+import { City, Feature, getPropertyCategories, getPropertyTypes, Zone } from "@/types";
+import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
+import { PropertyService } from "@/services/property/property-service";
 
 export const PropertyFilterForm = () => {
-  const [value, setValue] = useState("");
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(0);
-  const [bedrooms, setBedrooms] = useState(0);
-  const [bathrooms, setBathrooms] = useState(0);
-  const [numparking, setNumParking] = useState(0);
-  const [areaMinPrice, setAreaMinPrice] = useState(0);
-  const [areaMaxPrice, setAreaMaxPrice] = useState(0);
+  const { cities, features, filterBody, setFilterBody } = usePropertiesContext();
 
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedZones, setSelectedZones] = useState(null);
-  const [selectedCategories, setSelectedCategories] = useState(null);
-  const [selectedTypes, setSelectedTypes] = useState(null);
-  const [selectedFeatures, setSelectedFeatures] = useState(null);
-  const cities = [
-    { name: "New York", code: "NY" },
-    { name: "Rome", code: "RM" },
-    { name: "London", code: "LDN" },
-    { name: "Istanbul", code: "IST" },
-    { name: "Paris", code: "PRS" },
-  ];
+  const [formValues, setFormValues] = useState(filterBody);
+
+  const [zones, setZones] = useState<Zone[]>([]);
+  const { page, setProperties } = usePropertiesContext();
+
+  const sendRequest = async () => {
+    if (formValues.selectedCity) {
+      const city = cities.find((city: City) => city.id === formValues.selectedCity);
+      setZones(city?.zones ?? []);
+    } else {
+      setZones([]);
+    }
+  };
+
+  useEffect(() => {
+    sendRequest();
+  }, [
+    formValues.selectedCity,
+    formValues.selectedZones,
+  ]);
+
+  const handleInputChange = (name: string, value: any) => {
+    if (name === "city_id") {
+      value = value ? value : null;
+    }
+    setFormValues({ ...formValues, [name]: value });
+    setFilterBody({ ...formValues, [name]: value });
+  };
 
   return (
     <>
@@ -38,28 +49,32 @@ export const PropertyFilterForm = () => {
         <div>
           <InputText
             id="title"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
+            value={formValues.value}
+            onChange={(e) => handleInputChange("value", e.target.value)}
             placeholder="Código o Nombre"
             className="w-full"
           />
         </div>
         <div>
           <Dropdown
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.value)}
+            value={formValues.selectedCity}
+            onChange={(e) => handleInputChange("selectedCity", e.value)}
             options={cities}
             optionLabel="name"
-            placeholder="Select a City"
+            optionValue="id"
+            placeholder="Selecionar Ciudad"
+            showClear
+            filter
             className="!w-full !border !border-[#d1d5db]"
           />
         </div>
         <div>
           <MultiSelect
-            value={selectedZones}
-            onChange={(e) => setSelectedZones(e.value)}
-            options={cities}
+            value={formValues.selectedZones}
+            onChange={(e) => handleInputChange("selectedZones", e.value)}
+            options={zones}
             optionLabel="name"
+            optionValue="id"
             display="chip"
             placeholder="Seleccionar Zonas"
             maxSelectedLabels={3}
@@ -70,8 +85,8 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="property_category"
-            value={selectedCategories}
-            onChange={(e) => setSelectedCategories(e.value)}
+            value={formValues.selectedCategories}
+            onChange={(e) => handleInputChange("selectedCategories", e.value)}
             options={getPropertyCategories()}
             optionLabel="name"
             optionValue="id"
@@ -87,9 +102,9 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="property_type"
-            value={selectedTypes}
-            onChange={(e) => setSelectedTypes(e.value)}
-            options={getPropertyCategories()}
+            value={formValues.selectedTypes}
+            onChange={(e) => handleInputChange("selectedTypes", e.value)}
+            options={getPropertyTypes()}
             optionLabel="name"
             optionValue="id"
             display="chip"
@@ -104,9 +119,9 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="features"
-            value={selectedFeatures}
-            onChange={(e) => setSelectedFeatures(e.value)}
-            options={getPropertyCategories()}
+            value={formValues.selectedFeatures}
+            onChange={(e) => handleInputChange("selectedFeatures", e.value)}
+            options={features}
             optionLabel="name"
             optionValue="id"
             display="chip"
@@ -127,8 +142,8 @@ export const PropertyFilterForm = () => {
               placeholder="Precio Min."
               minFractionDigits={2}
               min={0}
-              value={minPrice}
-              onValueChange={(e) => setMinPrice(e.value!)}
+              value={formValues.minPrice}
+              onValueChange={(e) => handleInputChange("minPrice", e.value!)}
               inputClassName="w-[120px]"
             />
             <InputNumber
@@ -137,8 +152,8 @@ export const PropertyFilterForm = () => {
               placeholder="Precio Max."
               minFractionDigits={2}
               min={0}
-              value={maxPrice}
-              onValueChange={(e) => setMaxPrice(e.value!)}
+              value={formValues.maxPrice}
+              onValueChange={(e) => handleInputChange("maxPrice", e.value!)}
               inputClassName="w-[120px]"
             />
           </div>
@@ -146,56 +161,64 @@ export const PropertyFilterForm = () => {
 
         <div>
           <label htmlFor="bedrooms">
-            Dormitorios <strong>{bedrooms}</strong>
+            Dormitorios &nbsp;
+            <strong>{formValues.bedrooms > 10 ? "Mas de 10" : formValues.bedrooms}</strong>
           </label>
           <Slider
-            value={bedrooms}
-            onChange={(e) => setBedrooms((e.value as any)!)}
+            value={formValues.bedrooms}
+            max={11}
+            onChange={(e) => handleInputChange("bedrooms", e.value)}
             className="!w-full my-3"
           />
         </div>
         <div>
           <label htmlFor="bathrooms">
-            Baños <strong>{bathrooms}</strong>
+            Baños &nbsp;
+            <strong>{formValues.bathrooms > 10 ? "Mas de 10" : formValues.bathrooms}</strong>
           </label>
           <Slider
-            value={bathrooms}
-            onChange={(e) => setBathrooms((e.value as any)!)}
+            value={formValues.bathrooms}
+            max={11}
+            onChange={(e) => handleInputChange("bathrooms", e.value)}
             className="!w-full my-3"
           />
         </div>
         <div>
           <label htmlFor="numparking">
-            Baños <strong>{numparking}</strong>
+            Estacionamientos &nbsp;
+            <strong>{formValues.numparking > 10 ? "Mas de 10" : formValues.numparking}</strong>
           </label>
           <Slider
-            value={numparking}
-            onChange={(e) => setNumParking((e.value as any)!)}
+            value={formValues.numparking}
+            max={11}
+            onChange={(e) => handleInputChange("numparking", e.value)}
             className="!w-full my-3"
           />
         </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <InputNumber
-            inputId="area_min"
-            mode="decimal"
-            placeholder="Area Min m2"
-            minFractionDigits={2}
-            min={0}
-            value={areaMinPrice}
-            onValueChange={(e) => setAreaMinPrice(e.value!)}
-            inputClassName="w-[120px]"
-          />
-          <InputNumber
-            inputId="area_max"
-            mode="decimal"
-            placeholder="Area Max m2."
-            minFractionDigits={2}
-            min={0}
-            value={areaMaxPrice}
-            onValueChange={(e) => setAreaMaxPrice(e.value!)}
-            inputClassName="w-[120px]"
-          />
+        <div>
+          <label htmlFor="area">Area m2</label>
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <InputNumber
+              inputId="area_min"
+              mode="decimal"
+              placeholder="Area Min m2"
+              minFractionDigits={2}
+              min={0}
+              value={formValues.areaMin}
+              onValueChange={(e) => handleInputChange("areaMin", e.value!)}
+              inputClassName="w-[120px]"
+            />
+            <InputNumber
+              inputId="area_max"
+              mode="decimal"
+              placeholder="Area Max m2."
+              minFractionDigits={2}
+              min={0}
+              value={formValues.areaMax}
+              onValueChange={(e) => handleInputChange("areaMax", e.value!)}
+              inputClassName="w-[120px]"
+            />
+          </div>
         </div>
       </form>
     </>

@@ -1,11 +1,12 @@
 "use client";
 
 import { FaMapLocationDot } from "react-icons/fa6";
-import { GoogleMap, Circle } from "@react-google-maps/api";
+import { GoogleMap, Circle, Marker } from "@react-google-maps/api";
 import { Dialog } from "primereact/dialog";
 import { useState } from "react";
 import { Property } from "@/types";
 import { MapProvider } from "@/providers";
+import useUserInfo from "@/hooks/useUserInfo";
 
 interface Props {
   property: Property;
@@ -35,6 +36,8 @@ export const PropertyMap = ({ property }: Props) => {
     lat: Number(property.latitude),
     lng: Number(property.longitude),
   });
+
+  const { isLogged } = useUserInfo();
 
   const [visible, setVisible] = useState(false);
 
@@ -66,7 +69,12 @@ export const PropertyMap = ({ property }: Props) => {
             zoom={defaultMapZoom}
             options={defaultMapOptions}
           >
-            <Circle center={center} radius={radius}></Circle>
+
+            {isLogged ? (
+              <Marker position={center}></Marker>
+            ) : (
+              <Circle center={center} radius={radius}></Circle>
+            )}
             <></>
           </GoogleMap>
         </MapProvider>

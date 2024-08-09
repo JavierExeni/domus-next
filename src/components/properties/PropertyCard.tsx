@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,9 +18,11 @@ import {
 
 interface Props {
   property: Property;
+  isLogged : boolean;
 }
 
-export const PropertyCard = ({ property }: Props) => {
+export const PropertyCard = ({ property, isLogged }: Props) => {
+  // const { isLogged } = useUserInfo();
   return (
     <div className="max-w-[400px] md:max-w-full md:w-full md:flex bg-white border border-gray-200 rounded-lg shadow-md m-auto h-full hover:shadow-xl transition-all duration-150">
       <Link href={`/propiedad/${property.id}`} className="flex items-center">
@@ -33,7 +36,7 @@ export const PropertyCard = ({ property }: Props) => {
       </Link>
 
       <div className="p-4 w-full">
-        <div className="flex gap-2 flex-col min-[850px]:flex-row justify-between items-start mb-2">
+        <div className="flex responsive-card-property gap-2 flex-col min-[850px]:flex-row justify-between items-start mb-2">
           <div className="flex items-baseline flex-row md:items-center justify-start gap-2">
             <span className="cursor-default bg-[#ecc17d] text-white text-base font-medium px-2.5 py-0.5 rounded border border-[#ecc17d]">
               {getPropertyCategoryById(property.property_category)}
@@ -54,20 +57,26 @@ export const PropertyCard = ({ property }: Props) => {
         </h2>
 
         {/* If the user its logged in */}
-        <p className="flex gap-2 items-center mb-3">
-          <span className="font-semibold">Agente captador:</span>
-          <span className="text-base italic font-normal text-black">
-            {property.created_by.first_name}
-            {property.created_by.last_name}
-          </span>
-        </p>
+        {isLogged && (
+          <p className="flex gap-2 items-center mb-3">
+            <span className="font-semibold">Agente captador:</span>
+            <span className="text-base italic font-normal text-black">
+              {property.created_by.first_name}
+              {property.created_by.last_name}
+            </span>
+          </p>
+      )}
+        
 
         <p className="flex items-baseline gap-2 mt-2">
           <FaLocationDot></FaLocationDot>
           <span className="text-xs md:text-sm">
             {property.zone.city.name} - {property.zone.name}
             {/* If the user its logged in */}
-            <span>- {property.address}</span>
+            {isLogged && (
+              <span>- {property.address}</span>
+            )}
+            {/* <span>- {property.address}</span> */}
           </span>
         </p>
 

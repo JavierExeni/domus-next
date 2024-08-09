@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const Footer = () => {
+  
   return (
     <footer className="bg-[#111f2e]">
       <div className="w-[80%] m-auto py-16">

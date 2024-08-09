@@ -9,12 +9,23 @@ import { Sidebar } from "primereact/sidebar";
 
 import { useState } from "react";
 import { FaBars } from "react-icons/fa6";
+import useUserInfo from "@/hooks/useUserInfo";
+import { logout, saveUserInfo } from "@/slices/user-slice";
+import { useDispatch } from "react-redux";
 
 export const TopMenu = () => {
+  const dispatch = useDispatch();
+  const { isLogged } = useUserInfo();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [loginStateVisible, setLoginVisible] = useState(false);
   const [contactFormVisible, setContactFormVisible] = useState(false);
   const [sellPropertyVisible, setSellPropertyVisible] = useState(false);
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    dispatch(logout());
+  };
 
   return (
     <>
@@ -51,14 +62,25 @@ export const TopMenu = () => {
 
           {/* Action Buttons */}
           <div className="hidden lg:flex items-center gap-4">
-            <a
-              onClick={() => {
-                setLoginVisible(true);
-              }}
-              className="cursor-pointer"
-            >
-              Ingresar
-            </a>
+            {isLogged ? (
+              <a
+                onClick={() => {
+                  handleLogout();
+                }}
+                className="cursor-pointer"
+              >
+                Cerrar Sesión
+              </a>
+            ) : (
+              <a
+                onClick={() => {
+                  setLoginVisible(true);
+                }}
+                className="cursor-pointer"
+              >
+                Ingresar
+              </a>
+            )}
             <a
               onClick={() => {
                 setSellPropertyVisible(true);
@@ -134,14 +156,25 @@ export const TopMenu = () => {
           </a>
 
           {/* Action Buttons */}
-          <a
-            onClick={() => {
-              setLoginVisible(true);
-            }}
-            className="cursor-pointer"
-          >
-            Ingresar
-          </a>
+          {isLogged ? (
+            <a
+              onClick={() => {
+                handleLogout();
+              }}
+              className="cursor-pointer"
+            >
+              Cerrar Sesión
+            </a>
+          ) : (
+            <a
+              onClick={() => {
+                setLoginVisible(true);
+              }}
+              className="cursor-pointer"
+            >
+              Ingresar
+            </a>
+          )}
           <a
             onClick={() => {
               setSellPropertyVisible(true);

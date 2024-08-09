@@ -7,6 +7,7 @@ import { Galleria } from "primereact/galleria";
 import { Button } from "primereact/button";
 import { FaDownload } from "react-icons/fa6";
 import { useRef, useState } from "react";
+import useUserInfo from "@/hooks/useUserInfo";
 
 interface Props {
   images: PropertyGallery[];
@@ -31,6 +32,8 @@ export const GalleryList = ({ images }: Props) => {
       numVisible: 1,
     },
   ];
+
+  const { isLogged } = useUserInfo();
 
   const itemTemplate = (item: any) => {
     return (
@@ -60,10 +63,13 @@ export const GalleryList = ({ images }: Props) => {
         item={itemTemplate}
       />
       {/* If the user its logged in */}
-      <Button aria-label="descarga de imagenes button">
-        <FaDownload />
-        <span className="px-3">Descarga de imágenes en bloque</span>
-      </Button>
+      {isLogged && (
+        <Button aria-label="descarga de imagenes button">
+          <FaDownload />
+          <span className="px-3">Descarga de imágenes en bloque</span>
+        </Button>
+      )}
+
       {images.map((image, index) => (
         <div key={image.id} className="mt-3">
           <div className="hidden xl:block relative">

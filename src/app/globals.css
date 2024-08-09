@@ -38,6 +38,10 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+.swal2-container{
+  z-index: 10000 !important;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -65,4 +69,42 @@ path {
   border-bottom: 1px solid #1e3a58;
   text-align: center;
   margin-bottom: 16px;
+}
+
+/*  responsive custom lista de propiedades */
+@media screen and (min-width: 1135px) {
+  .responsive-filter {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 1135px) {
+  .responsive-filter-buttons {
+    display: block;
+  }
+}
+
+/* responsive card property */
+@media screen and (max-width: 1445px) {
+  .responsive-card-property {
+    flex-direction: column !important;
+    align-items: start !important;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .responsive_grid_images_detail_property {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}
+@media screen and (min-width: 1101px) {
+  .responsive_grid_images_detail_property_div2 {
+    display: grid !important;
+  }
+}
+ /* responsive contract type home page */
+@media screen and (max-width: 960px) {
+  .responsive-contract-type {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }

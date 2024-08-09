@@ -1,15 +1,21 @@
+"use client";
 import { TopListPaginator } from "../properties/TopListPaginator";
 import { PaginatedResponse, Property } from "@/types";
 import { PropertyCard } from "../properties/PropertyCard";
 import { EmptyListMessage } from "../ui/empty-list-message/EmptyListMessage";
 import { BottomListPagination } from "../properties/BottomListPagination";
 import { FaFilter } from "react-icons/fa6";
+import ReduxProvider from "@/providers/redux-provider";
+import useUserInfo from "@/hooks/useUserInfo";
 
 interface Props {
   properties: PaginatedResponse<Property>;
 }
 
 export const AgentPropertyList = ({ properties }: Props) => {
+
+  const { isLogged } = useUserInfo();
+
   return (
     <>
       <div className="py-4 w-full">
@@ -31,7 +37,7 @@ export const AgentPropertyList = ({ properties }: Props) => {
         <div className="grid grid-cols-1 gap-5 w-full">
           {!!properties.results ? (
             properties.results.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} isLogged={isLogged} />
             ))
           ) : (
             <EmptyListMessage message="No se encontraron propiedades registradas." />

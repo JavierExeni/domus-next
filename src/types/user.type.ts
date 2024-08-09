@@ -39,6 +39,17 @@ export type Customer = {
   created_by: Employee;
 }
 
+export type UserRedux = {
+  id:            number;
+  email:         string;
+  full_name:     string;
+  image_profile: string;
+  role:          number;
+  first_name:    string;
+  last_name:     string;
+  groups :       number[];
+  phone :        string;
+}
 
 export enum USER_TYPE {
   ADMIN = 1,

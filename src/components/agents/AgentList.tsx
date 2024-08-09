@@ -1,12 +1,11 @@
-import { getAgentListPaginated } from "@/services";
-import { Employee } from "@/types";
+"use client";
 import { AgentTopFilters } from "./AgentTopFilters";
-import { PaginatedResponse } from "../../types/paginated-response.type";
 import { AgentCard } from "./AgentCard";
+import { useAgentsContext } from "@/app/(main)/agentes/layout";
 
-export const AgentList = async () => {
-  const agents: PaginatedResponse<Employee> = await getAgentListPaginated(1);
-  console.log(agents)
+export const AgentList = () => {
+  const { agents } = useAgentsContext();
+
   return (
     <>
       <div>

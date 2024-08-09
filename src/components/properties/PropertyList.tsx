@@ -1,12 +1,16 @@
-import { getPropertyList } from "@/services";
+"use client";
 import { TopListPaginator } from "./TopListPaginator";
 import { PaginatedResponse, Property } from "@/types";
 import { PropertyCard } from "./PropertyCard";
 import { EmptyListMessage } from "../ui/empty-list-message/EmptyListMessage";
 import { BottomListPagination } from "./BottomListPagination";
+import useUserInfo from "@/hooks/useUserInfo";
+import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
 
-export const PropertyList = async () => {
-  const properties: PaginatedResponse<Property> = await getPropertyList(1);
+export const PropertyList = () => {
+  const { properties } = usePropertiesContext();
+  const { isLogged } = useUserInfo();
+
   return (
     <>
       <div className="py-4 w-full">
@@ -24,7 +28,7 @@ export const PropertyList = async () => {
         <div className="grid grid-cols-1 gap-5 w-full">
           {!!properties.results ? (
             properties.results.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} isLogged={isLogged} />
             ))
           ) : (
             <EmptyListMessage message="No se encontraron propiedades registradas." />

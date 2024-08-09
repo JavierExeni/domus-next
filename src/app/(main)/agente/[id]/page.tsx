@@ -3,7 +3,9 @@ import {
   AgentProfileCard,
   AgentPropertyList,
 } from "@/components";
-import { getPropertyFilterList, getSingleAgent } from "@/services";
+import ReduxProvider from "@/providers/redux-provider";
+import { PropertyService } from "@/services/property/property-service";
+import { AgentService } from "@/services/users/agent-service";
 import { PaginatedResponse, Property } from "@/types";
 
 interface Props {
@@ -13,11 +15,11 @@ interface Props {
 }
 
 export default async function AgentPage({ params }: Props) {
-  const agent = await getSingleAgent(params.id);
-  const properties: PaginatedResponse<Property> = await getPropertyFilterList(
+  const properties: PaginatedResponse<Property> = await PropertyService.getPropertyFilterList(
     params.id
   );
-
+  const agent = await AgentService.getSingleAgent(params.id);
+  
   return (
     <div className="w-[90%] xl:w-[85%] m-auto py-4 flex gap-4">
       <div className="self-start flex-col gap-3 hidden xl:flex">
@@ -27,8 +29,9 @@ export default async function AgentPage({ params }: Props) {
         {/* Contact Form */}
         <AgentContactForm agent={agent} />
       </div>
-
-      <AgentPropertyList properties={properties} />
+      <ReduxProvider>
+        <AgentPropertyList properties={properties} />
+      </ReduxProvider>
     </div>
   );
 }
