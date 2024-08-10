@@ -1,13 +1,7 @@
 'use client'
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { City, Employee, Feature, PaginatedResponse, Property } from '@/types';
-import { MobileFilterOption } from '@/components/properties/MobileFilterOption';
-import { PropertyFilterForm, PropertyList } from '@/components';
-import ReduxProvider from '@/providers/redux-provider';
-import { getPropertyList } from '@/services/property/properties';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { City, Employee, PaginatedResponse } from '@/types';
 import { CitiesService } from '@/services/parameter/cities-service';
-import { FeaturesService } from '@/services/parameter/features-service';
-import { PropertyService } from '@/services/property/property-service';
 import { AgentService } from '@/services/users/agent-service';
 
 export interface agentsDatosContext {
@@ -28,19 +22,7 @@ export default function layout(
         <AgentsProvider>
             <div className="w-[90%] md:w-[80%] m-auto py-4 lg:!mb-10">
                 {children}
-                {/* <AgentList /> */}
             </div>
-            {/* <div className="w-[90%] xl:w-[85%] m-auto">
-                <MobileFilterOption />
-                <div className="lg:flex lg:items-start">
-                    <div className="bg-white border border-gray-200 rounded-md w-[300px] p-4 hidden responsive-filter my-6 mr-10 sticky top-2 z-40">
-                        <PropertyFilterForm />
-                    </div>
-                    <ReduxProvider>
-                        {children}
-                    </ReduxProvider>
-                </div>
-            </div> */}
         </AgentsProvider>
     )
 }
@@ -58,9 +40,10 @@ export function AgentsProvider(
     const [filterBody, setFilterBody] = useState({
         full_name: "",
         city_id: null,
-        role : 2
+        role: 2
     });
     const [page, setPage] = useState(1);
+    const prevFilterBody = useRef(filterBody);
 
     async function getCities() {
         const cities = await CitiesService.getCities();
@@ -76,13 +59,34 @@ export function AgentsProvider(
         getCities();
     }, []);
 
+    // useEffect(() => {
+    //     getAgents();
+    // }, [
+    //     filterBody.full_name,
+    //     filterBody.city_id,
+    //     page
+    // ]);
+
     useEffect(() => {
-        getAgents();
-      }, [
-        filterBody.full_name,
-        filterBody.city_id,
-        page
-      ]);
+        console.log("filterBody", filterBody);
+
+        if (JSON.stringify(prevFilterBody.current) !== JSON.stringify(filterBody)) {
+            if (page === 1) {
+                getAgents();
+            } else {
+                setPage(1);
+            }
+        } else {
+            getAgents();
+        }
+        prevFilterBody.current = filterBody;
+    }, [filterBody]);
+
+    useEffect(() => {
+        if (JSON.stringify(prevFilterBody.current) === JSON.stringify(filterBody)) {
+            getAgents();
+        }
+    }, [page]);
 
     const datos = {
         agents: agents,

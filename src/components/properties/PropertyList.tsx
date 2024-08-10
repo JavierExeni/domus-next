@@ -35,7 +35,7 @@ export const PropertyList = () => {
           )}
         </div>
 
-        <BottomListPagination count={properties.count} />
+        <BottomListPagination count={properties.count} rows={10} context={usePropertiesContext()}/>
       </div>
     </>
   );

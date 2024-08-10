@@ -1,23 +1,29 @@
 "use client";
 
-import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
+import { agentsDatosContext } from "@/app/(main)/agentes/layout";
+import { propertiesDatosContext, usePropertiesContext } from "@/app/(main)/propiedades/layout";
 import { Paginator } from "primereact/paginator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   count: number;
+  rows : number;
+  context : propertiesDatosContext | agentsDatosContext;
 }
 
-export const BottomListPagination = ({ count }: Props) => {
+export const BottomListPagination = ({ count, rows, context }: Props) => {
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
-  const {setPage} = usePropertiesContext();
+  const page = context.page;
+  const setPage = context.setPage;
 
   const onPageChange = (event: any) => {
     setFirst(event.first);
-    setRows(event.rows);
     setPage(event.page + 1);
   };
+
+  useEffect(() => {
+    setFirst(10*(page - 1));
+  }, [page]);
   
   return (
     <>

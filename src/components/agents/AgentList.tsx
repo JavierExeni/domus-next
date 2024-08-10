@@ -2,6 +2,7 @@
 import { AgentTopFilters } from "./AgentTopFilters";
 import { AgentCard } from "./AgentCard";
 import { useAgentsContext } from "@/app/(main)/agentes/layout";
+import { BottomListPagination } from "../properties/BottomListPagination";
 
 export const AgentList = () => {
   const { agents } = useAgentsContext();
@@ -17,6 +18,8 @@ export const AgentList = () => {
           <AgentCard key={agent.id} agent={agent} />
         ))}
       </div>
+      
+      <BottomListPagination count={agents.count} rows={20} context={useAgentsContext()}/>
     </>
   );
 };

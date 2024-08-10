@@ -9,19 +9,15 @@ import { Slider } from "primereact/slider";
 import { useEffect, useState } from "react";
 import { City, Feature, getPropertyCategories, getPropertyTypes, Zone } from "@/types";
 import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
-import { PropertyService } from "@/services/property/property-service";
 
 export const PropertyFilterForm = () => {
   const { cities, features, filterBody, setFilterBody } = usePropertiesContext();
 
-  const [formValues, setFormValues] = useState(filterBody);
-
   const [zones, setZones] = useState<Zone[]>([]);
-  const { page, setProperties } = usePropertiesContext();
 
-  const sendRequest = async () => {
-    if (formValues.selectedCity) {
-      const city = cities.find((city: City) => city.id === formValues.selectedCity);
+  const updateZones = async () => {
+    if (filterBody.selectedCity) {
+      const city = cities.find((city: City) => city.id === filterBody.selectedCity);
       setZones(city?.zones ?? []);
     } else {
       setZones([]);
@@ -29,18 +25,17 @@ export const PropertyFilterForm = () => {
   };
 
   useEffect(() => {
-    sendRequest();
+    updateZones();
   }, [
-    formValues.selectedCity,
-    formValues.selectedZones,
+    filterBody.selectedCity,
+    filterBody.selectedZones,
   ]);
 
   const handleInputChange = (name: string, value: any) => {
-    if (name === "city_id") {
+    if (name === "selectedCity") {
       value = value ? value : null;
     }
-    setFormValues({ ...formValues, [name]: value });
-    setFilterBody({ ...formValues, [name]: value });
+    setFilterBody({ ...filterBody, [name]: value });
   };
 
   return (
@@ -49,7 +44,7 @@ export const PropertyFilterForm = () => {
         <div>
           <InputText
             id="title"
-            value={formValues.value}
+            value={filterBody.value}
             onChange={(e) => handleInputChange("value", e.target.value)}
             placeholder="Código o Nombre"
             className="w-full"
@@ -57,7 +52,7 @@ export const PropertyFilterForm = () => {
         </div>
         <div>
           <Dropdown
-            value={formValues.selectedCity}
+            value={filterBody.selectedCity}
             onChange={(e) => handleInputChange("selectedCity", e.value)}
             options={cities}
             optionLabel="name"
@@ -70,7 +65,7 @@ export const PropertyFilterForm = () => {
         </div>
         <div>
           <MultiSelect
-            value={formValues.selectedZones}
+            value={filterBody.selectedZones}
             onChange={(e) => handleInputChange("selectedZones", e.value)}
             options={zones}
             optionLabel="name"
@@ -85,7 +80,7 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="property_category"
-            value={formValues.selectedCategories}
+            value={filterBody.selectedCategories}
             onChange={(e) => handleInputChange("selectedCategories", e.value)}
             options={getPropertyCategories()}
             optionLabel="name"
@@ -102,7 +97,7 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="property_type"
-            value={formValues.selectedTypes}
+            value={filterBody.selectedTypes}
             onChange={(e) => handleInputChange("selectedTypes", e.value)}
             options={getPropertyTypes()}
             optionLabel="name"
@@ -119,7 +114,7 @@ export const PropertyFilterForm = () => {
         <div>
           <MultiSelect
             id="features"
-            value={formValues.selectedFeatures}
+            value={filterBody.selectedFeatures}
             onChange={(e) => handleInputChange("selectedFeatures", e.value)}
             options={features}
             optionLabel="name"
@@ -142,7 +137,7 @@ export const PropertyFilterForm = () => {
               placeholder="Precio Min."
               minFractionDigits={2}
               min={0}
-              value={formValues.minPrice}
+              value={filterBody.minPrice}
               onValueChange={(e) => handleInputChange("minPrice", e.value!)}
               inputClassName="w-[120px]"
             />
@@ -152,7 +147,7 @@ export const PropertyFilterForm = () => {
               placeholder="Precio Max."
               minFractionDigits={2}
               min={0}
-              value={formValues.maxPrice}
+              value={filterBody.maxPrice}
               onValueChange={(e) => handleInputChange("maxPrice", e.value!)}
               inputClassName="w-[120px]"
             />
@@ -162,10 +157,10 @@ export const PropertyFilterForm = () => {
         <div>
           <label htmlFor="bedrooms">
             Dormitorios &nbsp;
-            <strong>{formValues.bedrooms > 10 ? "Mas de 10" : formValues.bedrooms}</strong>
+            <strong>{filterBody.bedrooms > 10 ? "Mas de 10" : filterBody.bedrooms}</strong>
           </label>
           <Slider
-            value={formValues.bedrooms}
+            value={filterBody.bedrooms}
             max={11}
             onChange={(e) => handleInputChange("bedrooms", e.value)}
             className="!w-full my-3"
@@ -174,10 +169,10 @@ export const PropertyFilterForm = () => {
         <div>
           <label htmlFor="bathrooms">
             Baños &nbsp;
-            <strong>{formValues.bathrooms > 10 ? "Mas de 10" : formValues.bathrooms}</strong>
+            <strong>{filterBody.bathrooms > 10 ? "Mas de 10" : filterBody.bathrooms}</strong>
           </label>
           <Slider
-            value={formValues.bathrooms}
+            value={filterBody.bathrooms}
             max={11}
             onChange={(e) => handleInputChange("bathrooms", e.value)}
             className="!w-full my-3"
@@ -186,10 +181,10 @@ export const PropertyFilterForm = () => {
         <div>
           <label htmlFor="numparking">
             Estacionamientos &nbsp;
-            <strong>{formValues.numparking > 10 ? "Mas de 10" : formValues.numparking}</strong>
+            <strong>{filterBody.numparking > 10 ? "Mas de 10" : filterBody.numparking}</strong>
           </label>
           <Slider
-            value={formValues.numparking}
+            value={filterBody.numparking}
             max={11}
             onChange={(e) => handleInputChange("numparking", e.value)}
             className="!w-full my-3"
@@ -204,7 +199,7 @@ export const PropertyFilterForm = () => {
               placeholder="Area Min m2"
               minFractionDigits={2}
               min={0}
-              value={formValues.areaMin}
+              value={filterBody.areaMin}
               onValueChange={(e) => handleInputChange("areaMin", e.value!)}
               inputClassName="w-[120px]"
             />
@@ -214,7 +209,7 @@ export const PropertyFilterForm = () => {
               placeholder="Area Max m2."
               minFractionDigits={2}
               min={0}
-              value={formValues.areaMax}
+              value={filterBody.areaMax}
               onValueChange={(e) => handleInputChange("areaMax", e.value!)}
               inputClassName="w-[120px]"
             />

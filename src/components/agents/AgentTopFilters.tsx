@@ -9,13 +9,9 @@ interface Props {
 }
 
 export const AgentTopFilters = ({ count }: Props) => {
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
   const {setPage} = useAgentsContext();
 
   const onPageChange = (event: any) => {
-    setFirst(event.first);
-    setRows(event.rows);
     setPage(event.page + 1);
   };
   return (
@@ -27,13 +23,6 @@ export const AgentTopFilters = ({ count }: Props) => {
         <span className="font-bold">
           { count } Agentes
         </span>
-        <Paginator
-          first={first}
-          rows={rows}
-          totalRecords={count}
-          onPageChange={onPageChange}
-          template="FirstPageLink PrevPageLink NextPageLink LastPageLink"
-        />
       </div>
 
       <AgentTopFilterForm  />

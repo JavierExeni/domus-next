@@ -1,10 +1,9 @@
 'use client'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { City, Feature, PaginatedResponse, Property } from '@/types';
 import { MobileFilterOption } from '@/components/properties/MobileFilterOption';
 import { PropertyFilterForm, PropertyList } from '@/components';
 import ReduxProvider from '@/providers/redux-provider';
-import { getPropertyList } from '@/services/property/properties';
 import { CitiesService } from '@/services/parameter/cities-service';
 import { FeaturesService } from '@/services/parameter/features-service';
 import { PropertyService } from '@/services/property/property-service';
@@ -69,13 +68,19 @@ export function PropertiesProvider(
         selectedFeatures: null,
     });
     const [page, setPage] = useState(1);
+    const prevFilterBody = useRef(filterBody);
 
     async function getCities() {
         const cities = await CitiesService.getCities();
         setCities(cities);
     }
 
-    async function getProperties() {
+    async function getFeatures() {
+        const features = await FeaturesService.getFeatures();
+        setFeatures(features)
+    }
+    
+    const getProperties = useCallback(async () => {
         const body = {
             agent: "",
             area_max: filterBody.areaMax,
@@ -94,12 +99,9 @@ export function PropertiesProvider(
         };
         const properties: PaginatedResponse<Property> = await PropertyService.getPropertiesFilter(page, body);
         setProperties(properties);
-    }
+    }, [filterBody, page]);
 
-    async function getFeatures() {
-        const features = await FeaturesService.getFeatures();
-        setFeatures(features)
-    }
+
 
     useEffect(() => {
         getCities();
@@ -107,23 +109,28 @@ export function PropertiesProvider(
     }, []);
 
     useEffect(() => {
-        getProperties();
-      }, [
-        filterBody.value,
-        filterBody.minPrice,
-        filterBody.maxPrice,
-        filterBody.bedrooms,
-        filterBody.bathrooms,
-        filterBody.numparking,
-        filterBody.areaMin,
-        filterBody.areaMax,
-        filterBody.selectedCity,
-        filterBody.selectedZones,
-        filterBody.selectedCategories,
-        filterBody.selectedTypes,
-        filterBody.selectedFeatures,
-        page
-      ]);
+        console.log("filterBody", filterBody);
+        if (prevFilterBody.current.selectedCity !== filterBody.selectedCity) {
+            setFilterBody({ ...filterBody, selectedZones: null });
+        }
+
+        if (JSON.stringify(prevFilterBody.current) !== JSON.stringify(filterBody)) {
+            if (page === 1) {
+                getProperties();
+            } else {
+                setPage(1);
+            }
+        } else {
+            getProperties();
+        }
+        prevFilterBody.current = filterBody;
+    }, [filterBody]);
+
+    useEffect(() => {
+        if (JSON.stringify(prevFilterBody.current) === JSON.stringify(filterBody)) {
+            getProperties();
+        }
+    }, [page]);
 
     const datos = {
         properties: properties,
