@@ -24,8 +24,8 @@ export const BannerFormFilter = () => {
 
   return (
     <form action="" className="flex flex-col gap-3 w-full">
-        <BannerMap cityName="Santa Cruz" />
-   
+      <BannerMap />
+
       <MultiSelect
         id="property_type"
         value={selectedTypes}
