@@ -35,7 +35,6 @@ export * from "./ui/footer/Footer";
 
 export * from "./ui/main/Banner";
 export * from "./ui/main/BannerFormFilter";
-export * from "./ui/main/BannerMap";
 export * from "./ui/main/BannerMobileFilterForm";
 export * from "./ui/main/CategoryGrid";
 export * from "./ui/main/CategoryGridItem";

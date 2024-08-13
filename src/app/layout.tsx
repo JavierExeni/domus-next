@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
 import { titleFont } from "@/config/fonts";
 
 import "./globals.css";
+
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 
 
 export const metadata = {
@@ -16,7 +19,7 @@ export const metadata = {
     title: 'Firma Propiedades',
     description: 'La llave para tu futuro',
     url: "https://firmacasas.com/",
-    siteName: 'A Todo Motor',
+    siteName: 'Firma Propiedades',
     images: [
       {
         url: "https://webmedia.firmacdn.com/domus/public/system/logo/logo.png",
@@ -48,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>

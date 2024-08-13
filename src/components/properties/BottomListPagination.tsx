@@ -7,24 +7,32 @@ import { useEffect, useState } from "react";
 
 interface Props {
   count: number;
-  rows : number;
-  context : propertiesDatosContext | agentsDatosContext;
+  rows: number;
+  context?: propertiesDatosContext | agentsDatosContext;
 }
 
 export const BottomListPagination = ({ count, rows, context }: Props) => {
   const [first, setFirst] = useState(0);
-  const page = context.page;
-  const setPage = context.setPage;
+
+  const filter = context?.filterBody;
+  const setFilter = context?.setFilterBody;
+
+  const page = filter?.page;
 
   const onPageChange = (event: any) => {
     setFirst(event.first);
-    setPage(event.page + 1);
+    setFilter({ ...filter, page: event.page + 1 });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
-    setFirst(10*(page - 1));
+    setFirst(10 * (page - 1));
   }, [page]);
-  
+
+  if (filter === null) {
+    return null;
+  }
+
   return (
     <>
       <div className="hidden md:block my-14">

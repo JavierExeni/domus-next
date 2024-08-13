@@ -1,9 +1,12 @@
+import { SystemService } from "@/services/system/system-service";
+import { faFacebook, faInstagram, faLinkedin, faPinterest, faTiktok, faXTwitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-export const Footer = () => {
-  
+export const Footer = async () => {
+  const systemData = await SystemService.getSystemData();
   return (
     <footer className="bg-[#111f2e]">
       <div className="w-[80%] m-auto py-16">
@@ -56,65 +59,74 @@ export const Footer = () => {
           <div>
             <h4 className="text-lg font-medium mb-6">Siguenos en</h4>
             <div className="flex flex-wrap items-center gap-4 text-[#8a99b3]">
-              {/* @if (systemService.system()?.facebook) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.facebook"
-              ><i className="fab fa-facebook-f"></i
-            ></a>
-          }
-
-          @if (systemService.system()?.instagram) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.instagram"
-              target="_blank"
-              ><i className="fab fa-instagram"></i
-            ></a>
-          }
-
-          @if (systemService.system()?.linkedin) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.linkedin"
-              target="_blank"
-              ><i className="fab fa-linkedin-in"></i
-            ></a>
-          }
-
-          @if (systemService.system()?.pinterest) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.pinterest"
-              target="_blank"
-              ><i className="fab fa-pinterest"></i
-            ></a>
-          }
-
-          @if (systemService.system()?.twitter) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.twitter"
-              target="_blank"
-              ><i className="fa-brands fa-x-twitter"></i
-            ></a>
-          }
-
-          @if (systemService.system()?.tiktok) {
-            <a
-              className="hover:text-white transition-all duration-200 ease-in-out"
-              [href]="systemService.system()?.tiktok"
-              target="_blank"
-              ><i className="fa-brands fa-tiktok"></i
-            ></a>
-          } */}
+              {systemData.facebook && (
+                <a
+                  href={systemData.facebook}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faFacebook} />
+                </a>
+              )}
+              {systemData.instagram && (
+                <a
+                  href={systemData.instagram}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faInstagram} />
+                </a>
+              )}
+              {systemData.linkedin && (
+                <a
+                  href={systemData.linkedin}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} />
+                </a>
+              )}
+              {systemData.pinterest && (
+                <a
+                  href={systemData.pinterest}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faPinterest} />
+                </a>
+              )}
+              {systemData.twitter && (
+                <a
+                  href={systemData.twitter}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faXTwitter} />
+                </a>
+              )}
+              {systemData.tiktok && (
+                <a
+                  href={systemData.tiktok}
+                  className="hover:text-white transition-all duration-200 ease-in-out"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faTiktok} />
+                </a>
+              )}
             </div>
           </div>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row justify-between items-center border-t border-[#ecc27d] w-[80%] mx-auto mt-8 py-8 text-white">
+        {/* "/images/Logo-Firma-Blanco.webp" */}
         <Image
-          src="/images/Logo-Firma-Blanco.webp"
+          src={systemData.footer_logo ? systemData.footer_logo : "/images/Logo-Firma-Blanco.webp"}
           className="w-44 lg:w-80 lg:h-[150px]"
           loading="lazy"
           width="320"

@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,7 +12,27 @@ interface Props {
 export const CategoryGridItem = ({ id, title, icon, image }: Props) => {
   return (
     <Link
-      href={`/propiedades/categoria/${id}`}
+      href={`/propiedades`}
+      onClick={() => {
+        const filterBody = {
+          value: "",
+          minPrice: 0,
+          maxPrice: 0,
+          bedrooms: 0,
+          bathrooms: 0,
+          numparking: 0,
+          areaMin: 0,
+          areaMax: 0,
+          selectedCity: null,
+          selectedZones: null,
+          selectedCategories: [id],
+          selectedTypes: null,
+          selectedFeatures: null,
+          page: 1,
+          agent : null
+        }
+        localStorage.setItem("filtro", JSON.stringify(filterBody));
+      }}
       className="relative cursor-pointer hover:shadow-lg transition-all duration-200 ease-in-out"
     >
       <Image

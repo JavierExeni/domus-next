@@ -1,36 +1,44 @@
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { AuthService } from "@/services/auth/auth";
 import { saveUserInfo } from "@/slices/user-slice";
-import { useCallback, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const useUserInfo = () => {
-
     const dispatch = useAppDispatch();
     const id = useAppSelector((state) => state.user.id);
     const user = useAppSelector((state) => state.user);
     const isLogged = useAppSelector((state) => state.user.id !== 0);
     const isAdmin = useAppSelector((state) => state.user.role === 1);
 
-    const getUserInfo = useCallback(() => {
-        AuthService.getUserInfo().then((response) => {
-            dispatch(saveUserInfo(response));
-        });
-    }, [dispatch]);
+    const isUserInfoFetched = useRef(false);
 
+    const getUserInfo = async (): Promise<any> => {
+        if (id === 0) {
+            const response = await AuthService.getUserInfo();
+            return response;
+        } else {
+            return null;
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
-        if (id === 0 && token) {
-            console.log("Getting user info");
-            getUserInfo();
+
+        if (id === 0 && token && !isUserInfoFetched.current) {
+            isUserInfoFetched.current = true;
+            getUserInfo().then((response) => {
+                if (response) {
+                    dispatch(saveUserInfo(response));
+                }
+            });
         }
-    }, [getUserInfo, id])
+    }, [id, dispatch]);
 
     return {
         user,
         isAdmin,
         isLogged,
-        // getUserInfo
-    }
-}
+    };
+};
+
 export default useUserInfo;

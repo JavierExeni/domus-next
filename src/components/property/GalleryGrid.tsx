@@ -26,7 +26,7 @@ export const GalleryGrid = ({ banner, images, type }: Props) => {
         <div className="overflow-hidden bg-cover bg-no-repeat cursor-pointer">
           <Image
             priority
-            src={images ? images[0].file_watermark : "/images/ph-house2.png"}
+            src={images[0] ? images[0].file_watermark : "/images/ph-house2.png"}
             width={250}
             height={200}
             className="rounded-tr-xl w-full max-h-[256px] h-full object-cover transition duration-300 ease-in-out hover:scale-110"
@@ -36,7 +36,7 @@ export const GalleryGrid = ({ banner, images, type }: Props) => {
         <div className="overflow-hidden bg-cover bg-no-repeat cursor-pointer">
           <Image
             priority
-            src={images ? images[1].file_watermark : "/images/ph-house2.png"}
+            src={images[1] ? images[1].file_watermark : "/images/ph-house2.png"}
             width={250}
             height={200}
             className="rounded-br-xl w-full max-h-[256px] h-full object-cover transition duration-300 ease-in-out hover:scale-110"

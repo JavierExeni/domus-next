@@ -1,7 +1,9 @@
+"use client";
+import { useAgentsContext } from "@/app/(main)/agentes/layout";
 import { Employee } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa6";
 
 interface Props {
@@ -9,8 +11,28 @@ interface Props {
 }
 
 export const AgentCard = ({ agent }: Props) => {
+
+  const { filterBody } = useAgentsContext();
+
+  const goToAgent = (id: number) => {
+    localStorage.setItem("filtroAgents", JSON.stringify(filterBody));
+    localStorage.setItem("lastVisitedAgent", JSON.stringify(id));
+    // window.location.href = `/propiedad/${id}`;
+  }
+
+  useEffect(() => {
+    const lastId = localStorage.getItem("lastVisitedAgent");
+      if (lastId) {
+        const element = document.getElementById(lastId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          localStorage.removeItem("lastVisitedAgent");
+        }
+      }
+  }, []);
+
   return (
-    <div className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow max-w-[400px] xl:max-w-full xl:flex-row h-full xl:w-full m-auto">
+    <div id={`${agent.id}`} className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow max-w-[400px] xl:max-w-full xl:flex-row h-full xl:w-full m-auto">
       <Image
         src={agent.image_profile ? agent.image_profile : "/images/logo.webp"}
         alt="user image profile"
@@ -46,7 +68,8 @@ export const AgentCard = ({ agent }: Props) => {
             <p className="font-semibold">{agent.email}</p>
           </div>
           <Link
-            href={`/agente/${agent.id}`}
+            href={`/propiedades/agente/${agent.id}`}
+            onClick={() => goToAgent(agent.id)}
             className="mt-4 inline-flex cursor-pointer items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#ecc17d] rounded-lg hover:bg-[#e1b878] focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             <span>

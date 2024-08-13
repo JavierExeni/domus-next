@@ -1,6 +1,8 @@
 import { BannerMobileFilterForm } from "./BannerMobileFilterForm";
 import { BannerFormFilter } from "./BannerFormFilter";
-export const Banner = () => {
+import { SystemService } from "@/services/system/system-service";
+export const Banner = async () => {
+  const systemData = await SystemService.getSystemData();
   return (
     <>
       <div className="h-[calc(100vh-74px)] lg:h-[calc(100vh-78px)] w-full bg-white bg-static-banner bg-no-repeat bg-bottom bg-cover brightness-[65%]"></div>
@@ -9,7 +11,7 @@ export const Banner = () => {
         <div className="flex items-center justify-around lg:w-[80%] m-auto lg:h-full lg:gap-10 xl:gap-16">
           <div className="xl:w-full">
             <h1 className="m-0 text-white font-bold text-center text-[32px] min-[1150px]:text-5xl min-[1530px]:text-[72px] mb-4">
-              LA LLAVE PARA TU FUTURO
+              {systemData.title ? systemData.title : "LA LLAVE PARA TU FUTURO"}
             </h1>
 
             <div className="flex items-center gap-5">

@@ -1,6 +1,6 @@
-'use client'
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { City, Feature, PaginatedResponse, Property } from '@/types';
+'use client';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { City, Feature, PaginatedResponse, Property, Zone } from '@/types';
 import { MobileFilterOption } from '@/components/properties/MobileFilterOption';
 import { PropertyFilterForm, PropertyList } from '@/components';
 import ReduxProvider from '@/providers/redux-provider';
@@ -11,12 +11,15 @@ import { PropertyService } from '@/services/property/property-service';
 export interface propertiesDatosContext {
     properties: PaginatedResponse<Property>,
     cities: City[],
+    zones: Zone[],
+    changeCity: boolean,
     features: Feature[],
     page: number,
     filterBody: any,
     setFilterBody: any,
     setPage: any,
-    setProperties: any
+    setProperties: any,
+    setChangeCity: any,
 }
 const propertiesContext = createContext({} as propertiesDatosContext);
 
@@ -33,7 +36,6 @@ export default function layout(
                     </div>
                     <ReduxProvider>
                         {children}
-                        {/* <PropertyList properties={properties}/> */}
                     </ReduxProvider>
                 </div>
             </div>
@@ -51,24 +53,12 @@ export function PropertiesProvider(
         results: []
     });
     const [cities, setCities] = useState([] as City[]);
+    const [zones, setZones] = useState([] as Zone[]);
     const [features, setFeatures] = useState([] as Feature[]);
-    const [filterBody, setFilterBody] = useState({
-        value: "",
-        minPrice: 0,
-        maxPrice: 0,
-        bedrooms: 0,
-        bathrooms: 0,
-        numparking: 0,
-        areaMin: 0,
-        areaMax: 0,
-        selectedCity: null,
-        selectedZones: null,
-        selectedCategories: null,
-        selectedTypes: null,
-        selectedFeatures: null,
-    });
-    const [page, setPage] = useState(1);
-    const prevFilterBody = useRef(filterBody);
+
+    const [filterBody, setFilterBody] = useState<any>(null);
+
+    const [changeCity, setChangeCity] = useState(false);
 
     async function getCities() {
         const cities = await CitiesService.getCities();
@@ -79,10 +69,18 @@ export function PropertiesProvider(
         const features = await FeaturesService.getFeatures();
         setFeatures(features)
     }
-    
-    const getProperties = useCallback(async () => {
+
+    const getProperties = async (): Promise<PaginatedResponse<Property>> => {
+        if (!filterBody) {
+            return {
+                count: 0,
+                next: null,
+                previous: null,
+                results: []
+            }
+        }
         const body = {
-            agent: "",
+            agent: filterBody.agent,
             area_max: filterBody.areaMax,
             area_min: filterBody.areaMin,
             city: filterBody.selectedCity,
@@ -97,50 +95,109 @@ export function PropertiesProvider(
             property_type: filterBody.selectedTypes,
             zones: filterBody.selectedZones,
         };
-        const properties: PaginatedResponse<Property> = await PropertyService.getPropertiesFilter(page, body);
-        setProperties(properties);
-    }, [filterBody, page]);
-
-
+        const properties: PaginatedResponse<Property> = await PropertyService.getPropertiesFilter(filterBody.page, body);
+        return properties;
+    }
 
     useEffect(() => {
+        if (filterBody == null) return;
+        if (filterBody.selectedCity) {
+            const city = cities.find((city: City) => city.id === filterBody.selectedCity);
+            setZones(city?.zones ?? []);
+        } else {
+            setZones([]);
+        }
+    }, [cities]);
+
+    useEffect(() => {
+        if (filterBody == null) return;
+        if (filterBody.selectedCity) {
+            const city = cities.find((city: City) => city.id === filterBody.selectedCity);
+            setZones(city?.zones ?? []);
+        }
+        setFilterBody({ ...filterBody, selectedZones: null });
+    }, [changeCity]);
+
+    useEffect(() => {
+        getProperties().then((properties) => {
+            setProperties(properties);
+            setTimeout(() => {
+                localStorage.removeItem('filtro');
+            }, 10);
+        });
+    }, [filterBody]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedFilterBody = localStorage.getItem('filtro');
+            
+            //propiedades/agente/1
+            // obtener el id del agente de la url
+            const url = window.location.pathname;
+            const id = Number(url.split("/")[3]);
+
+            if (savedFilterBody) {
+                console.log("savedFilterBody", savedFilterBody);
+                const filter = JSON.parse(savedFilterBody);
+                let page = 0;
+                if (filter.page && filter.agent && !id) {
+                    page = 1;
+                }else {
+                    page = filter.page;
+                }
+
+                // const page = filter.page ? filter.page : 1;
+                setFilterBody({
+                    value: filter.value,
+                    minPrice: filter.minPrice,
+                    maxPrice: filter.maxPrice,
+                    bedrooms: filter.bedrooms,
+                    bathrooms: filter.bathrooms,
+                    numparking: filter.numparking,
+                    areaMin: filter.areaMin,
+                    areaMax: filter.areaMax,
+                    selectedCity: filter.selectedCity,
+                    selectedZones: filter.selectedZones,
+                    selectedCategories: filter.selectedCategories,
+                    selectedTypes: filter.selectedTypes,
+                    selectedFeatures: filter.selectedFeatures,
+                    page: page,
+                    agent: id ? id : null
+                });
+            } else {
+                setFilterBody({
+                    value: "",
+                    minPrice: 0,
+                    maxPrice: 0,
+                    bedrooms: 0,
+                    bathrooms: 0,
+                    numparking: 0,
+                    areaMin: 0,
+                    areaMax: 0,
+                    selectedCity: null,
+                    selectedZones: null,
+                    selectedCategories: null,
+                    selectedTypes: null,
+                    selectedFeatures: null,
+                    page: 1,
+                    agent: id ? id : null
+                });
+            }
+        }
         getCities();
         getFeatures();
     }, []);
 
-    useEffect(() => {
-        console.log("filterBody", filterBody);
-        if (prevFilterBody.current.selectedCity !== filterBody.selectedCity) {
-            setFilterBody({ ...filterBody, selectedZones: null });
-        }
-
-        if (JSON.stringify(prevFilterBody.current) !== JSON.stringify(filterBody)) {
-            if (page === 1) {
-                getProperties();
-            } else {
-                setPage(1);
-            }
-        } else {
-            getProperties();
-        }
-        prevFilterBody.current = filterBody;
-    }, [filterBody]);
-
-    useEffect(() => {
-        if (JSON.stringify(prevFilterBody.current) === JSON.stringify(filterBody)) {
-            getProperties();
-        }
-    }, [page]);
-
     const datos = {
         properties: properties,
         cities: cities,
+        zones: zones,
         features: features,
-        page: page,
         filterBody: filterBody,
+        changeCity: changeCity,
         setFilterBody: setFilterBody,
-        setPage: setPage,
-        setProperties: setProperties
+        setProperties: setProperties,
+        setChangeCity: setChangeCity,
     } as propertiesDatosContext;
 
     return (

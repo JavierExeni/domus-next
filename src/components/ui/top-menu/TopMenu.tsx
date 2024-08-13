@@ -10,7 +10,7 @@ import { Sidebar } from "primereact/sidebar";
 import { useState } from "react";
 import { FaBars } from "react-icons/fa6";
 import useUserInfo from "@/hooks/useUserInfo";
-import { logout, saveUserInfo } from "@/slices/user-slice";
+import { logout } from "@/slices/user-slice";
 import { useDispatch } from "react-redux";
 
 export const TopMenu = () => {

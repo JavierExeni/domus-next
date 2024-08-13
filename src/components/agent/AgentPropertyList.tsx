@@ -7,6 +7,7 @@ import { BottomListPagination } from "../properties/BottomListPagination";
 import { FaFilter } from "react-icons/fa6";
 import ReduxProvider from "@/providers/redux-provider";
 import useUserInfo from "@/hooks/useUserInfo";
+import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
 
 interface Props {
   properties: PaginatedResponse<Property>;
@@ -44,7 +45,7 @@ export const AgentPropertyList = ({ properties }: Props) => {
           )}
         </div>
 
-        <BottomListPagination count={properties.count} />
+        <BottomListPagination count={properties.count} rows={10} />
       </div>
     </>
   );

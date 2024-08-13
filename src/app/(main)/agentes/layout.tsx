@@ -7,10 +7,8 @@ import { AgentService } from '@/services/users/agent-service';
 export interface agentsDatosContext {
     agents: PaginatedResponse<Employee>,
     cities: City[],
-    page: number,
     filterBody: any,
     setFilterBody: any,
-    setPage: any,
     setAgents: any
 }
 const agentsContext = createContext({} as agentsDatosContext);
@@ -37,64 +35,77 @@ export function AgentsProvider(
         results: []
     });
     const [cities, setCities] = useState([] as City[]);
-    const [filterBody, setFilterBody] = useState({
-        full_name: "",
-        city_id: null,
-        role: 2
-    });
-    const [page, setPage] = useState(1);
-    const prevFilterBody = useRef(filterBody);
+    const [filterBody, setFilterBody] = useState<any>(null);
+    const [changeCity, setChangeCity] = useState(false);
 
     async function getCities() {
         const cities = await CitiesService.getCities();
         setCities(cities);
     }
 
-    async function getAgents() {
-        const agents: PaginatedResponse<Employee> = await AgentService.getAgentListPaginated(page, filterBody);
-        setAgents(agents);
+    const getAgents = async (): Promise<PaginatedResponse<Employee>> => {
+        if (!filterBody) {
+            return {
+                count: 0,
+                next: null,
+                previous: null,
+                results: []
+            }
+        }
+        const body = {
+            full_name: filterBody.full_name,
+            city_id: filterBody.city_id,
+            role: 2
+        };
+        const agents: PaginatedResponse<Employee> = await AgentService.getAgentListPaginated(filterBody.page, body);
+        return agents;
     }
 
+    // async function getAgents() {
+    //     const agents: PaginatedResponse<Employee> = await AgentService.getAgentListPaginated(page, filterBody);
+    //     setAgents(agents);
+    // }
+
     useEffect(() => {
+        // if (typeof window !== 'undefined') {
+        //     setFilterBody({
+        //         full_name : '',
+        //         city_id : null,
+        //         role : 2,
+        //         page: 1
+        //     });
+        // }
+        if (typeof window !== 'undefined') {
+            const savedFilterBody = localStorage.getItem('filtroAgents');
+
+            if (savedFilterBody) {
+                setFilterBody(JSON.parse(savedFilterBody));
+            } else {
+                setFilterBody({
+                    full_name: '',
+                    city_id: null,
+                    role: 2,
+                    page: 1
+                });
+            }
+        }
         getCities();
     }, []);
 
-    // useEffect(() => {
-    //     getAgents();
-    // }, [
-    //     filterBody.full_name,
-    //     filterBody.city_id,
-    //     page
-    // ]);
-
     useEffect(() => {
-        console.log("filterBody", filterBody);
-
-        if (JSON.stringify(prevFilterBody.current) !== JSON.stringify(filterBody)) {
-            if (page === 1) {
-                getAgents();
-            } else {
-                setPage(1);
-            }
-        } else {
-            getAgents();
-        }
-        prevFilterBody.current = filterBody;
+        getAgents().then((agents) => {
+            setAgents(agents);
+            setTimeout(() => {
+                localStorage.removeItem('filtroAgents');
+            }, 10);
+        });
     }, [filterBody]);
-
-    useEffect(() => {
-        if (JSON.stringify(prevFilterBody.current) === JSON.stringify(filterBody)) {
-            getAgents();
-        }
-    }, [page]);
 
     const datos = {
         agents: agents,
         cities: cities,
-        page: page,
         filterBody: filterBody,
         setFilterBody: setFilterBody,
-        setPage: setPage,
         setAgents: setAgents
     } as agentsDatosContext;
 

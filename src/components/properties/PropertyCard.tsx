@@ -15,6 +15,9 @@ import {
   FaLocationDot,
   FaPersonShelter,
 } from "react-icons/fa6";
+import { Button } from "primereact/button";
+import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
+import { useEffect } from "react";
 
 interface Props {
   property: Property;
@@ -22,9 +25,31 @@ interface Props {
 }
 
 export const PropertyCard = ({ property, isLogged }: Props) => {
-  // const { isLogged } = useUserInfo();
+
+  const {filterBody} = usePropertiesContext();
+
+  const goToPropiedad = (id: number) => {
+    if (filterBody != null || filterBody != undefined) {
+      localStorage.setItem("filtro", JSON.stringify(filterBody));
+    }
+    localStorage.setItem("lastVisited", JSON.stringify(id));
+    // window.location.href = `/propiedad/${id}`;
+  }
+
+
+  useEffect(() => {
+    const lastId = localStorage.getItem("lastVisited");
+      if (lastId) {
+        const element = document.getElementById(lastId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          localStorage.removeItem("lastVisited");
+        }
+      }
+  }, []);
+
   return (
-    <div className="max-w-[400px] md:max-w-full md:w-full md:flex bg-white border border-gray-200 rounded-lg shadow-md m-auto h-full hover:shadow-xl transition-all duration-150">
+    <div id={`${property.id}`} className="max-w-[400px] md:max-w-full md:w-full md:flex bg-white border border-gray-200 rounded-lg shadow-md m-auto h-full hover:shadow-xl transition-all duration-150">
       <Link href={`/propiedad/${property.id}`} className="flex items-center">
         <Image
           className="object-cover object-left rounded-t-lg md:rounded-l-lg md:rounded-tr-none md:max-w-[400px] xl:max-w-[400px] md:h-[400px]"
@@ -142,6 +167,7 @@ export const PropertyCard = ({ property, isLogged }: Props) => {
 
         <Link
           href={`/propiedad/${property.id}`}
+          onClick={() => goToPropiedad(property.id)}
           className="inline-flex cursor-pointer items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#ecc17d] rounded-lg hover:bg-[#e1b878] focus:ring-4 focus:outline-none focus:ring-blue-300"
         >
           <span> Ver detalles</span>

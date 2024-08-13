@@ -6,37 +6,22 @@ import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { Slider } from "primereact/slider";
 
-import { useEffect, useState } from "react";
-import { City, Feature, getPropertyCategories, getPropertyTypes, Zone } from "@/types";
+import { getPropertyCategories, getPropertyTypes, Zone } from "@/types";
 import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
 
 export const PropertyFilterForm = () => {
-  const { cities, features, filterBody, setFilterBody } = usePropertiesContext();
-
-  const [zones, setZones] = useState<Zone[]>([]);
-
-  const updateZones = async () => {
-    if (filterBody.selectedCity) {
-      const city = cities.find((city: City) => city.id === filterBody.selectedCity);
-      setZones(city?.zones ?? []);
-    } else {
-      setZones([]);
-    }
-  };
-
-  useEffect(() => {
-    updateZones();
-  }, [
-    filterBody.selectedCity,
-    filterBody.selectedZones,
-  ]);
+  const { cities, zones, features, filterBody, setFilterBody, changeCity, setChangeCity } = usePropertiesContext();
 
   const handleInputChange = (name: string, value: any) => {
     if (name === "selectedCity") {
       value = value ? value : null;
     }
-    setFilterBody({ ...filterBody, [name]: value });
+    setFilterBody({ ...filterBody, [name]: value, page:1 });
   };
+
+  if (filterBody===null){
+    return null;
+  }
 
   return (
     <>
@@ -53,7 +38,10 @@ export const PropertyFilterForm = () => {
         <div>
           <Dropdown
             value={filterBody.selectedCity}
-            onChange={(e) => handleInputChange("selectedCity", e.value)}
+            onChange={(e) => {
+              setChangeCity(!changeCity);
+              handleInputChange("selectedCity", e.value)
+            }}
             options={cities}
             optionLabel="name"
             optionValue="id"

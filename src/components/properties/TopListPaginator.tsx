@@ -11,17 +11,24 @@ interface Props {
 export const TopListPaginator = ({ count }: Props) => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
-  const { page, setPage} = usePropertiesContext();
-  
+  const { filterBody, setFilterBody } = usePropertiesContext();
+
+  const page = filterBody?.page;
+
   const onPageChange = (event: any) => {
     setFirst(event.first);
     setRows(event.rows);
-    setPage(event.page + 1);
+    setFilterBody({ ...filterBody, page: event.page + 1 });
   };
 
   useEffect(() => {
-    setFirst(10*(page - 1));
+    setFirst(10*(page- 1));
   }, [page]);
+
+
+  if (filterBody === null) {
+    return null;
+  }
 
   return (
     <>

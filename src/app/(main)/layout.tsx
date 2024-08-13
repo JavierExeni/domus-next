@@ -15,7 +15,6 @@ export default function MainLayout({
         <ReduxProvider>
           <TopMenu />
         </ReduxProvider>
-        
         <div className="min-h-screen relative text-[#1e3a58]">{children}</div>
       </PrimeReactProvider>
       <Footer />

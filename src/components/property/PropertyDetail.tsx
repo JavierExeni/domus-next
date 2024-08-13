@@ -1,10 +1,11 @@
 "use client";
-import { Property } from "@/types";
+import { Employee, Property } from "@/types";
 import { PropertyFeatures } from "./PropertyFeatures";
 import { useEffect, useState } from "react";
 import useUserInfo from "@/hooks/useUserInfo";
 import ReduxProviders from "@/providers/redux-provider";
 import ContactForm from "../ui/contact/ContactForm";
+import { AgentService } from "@/services/users/agent-service";
 
 interface Props {
   property: Property;
@@ -13,6 +14,19 @@ interface Props {
 export const PropertyDetail = ({ property }: Props) => {
 
   const { isLogged } = useUserInfo();
+  const [userSearchParam, setuserSearchParam] = useState<Employee | null>();
+
+  const getAgent = async (id: number) => {
+    const response = await AgentService.getSingleAgent(id);
+    setuserSearchParam(response);
+  }
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const agent = urlParams.get('agent');
+    if (agent) {
+      getAgent(parseInt(agent));
+    }
+  }, []);
 
   return (
     <div className="grid lg:grid-cols-[1fr_auto] gap-3 lg:!gap-5">
@@ -82,18 +96,9 @@ export const PropertyDetail = ({ property }: Props) => {
         <PropertyFeatures />
       </div>
       {/* si esta logeado mandar el usuario, sino mandar null */}
-      <ContactForm userContact={isLogged ? property.created_by : null}></ContactForm>
-      {/* <ContactForm userContact={property.created_by}></ContactForm> */}
-
-      {/* formulario de contacto */}
-      {/* @if (property && agent) {
-          <app-send-info-form
-            [user]="agent"
-            [property]="property"
-            [isLink]="isLink"
-            [showButtons]="true"
-          ></app-send-info-form>
-          } */}
+      {userSearchParam && <ContactForm userContact={userSearchParam} />}
+      {!userSearchParam && <ContactForm userContact={isLogged ? property.created_by : null} />}
+      {/* <ContactForm userContact={isLogged ? property.created_by : null}></ContactForm> */}
     </div>
   );
 };
