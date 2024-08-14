@@ -95,10 +95,10 @@ export const PropertyDetail = ({ property }: Props) => {
 
         <PropertyFeatures />
       </div>
+
       {/* si esta logeado mandar el usuario, sino mandar null */}
-      {userSearchParam && <ContactForm userContact={userSearchParam} />}
-      {!userSearchParam && <ContactForm userContact={isLogged ? property.created_by : null} />}
-      {/* <ContactForm userContact={isLogged ? property.created_by : null}></ContactForm> */}
+      {isLogged && <ContactForm userContact={property.created_by} />}
+      {!isLogged && <ContactForm userContact={userSearchParam ? userSearchParam : null} />}
     </div>
   );
 };

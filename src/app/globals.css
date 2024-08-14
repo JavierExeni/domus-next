@@ -78,7 +78,7 @@ path {
   }
 }
 
-@media screen and (max-width: 1135px) {
+@media screen and (max-width: 1134px) {
   .responsive-filter-buttons {
     display: block;
   }

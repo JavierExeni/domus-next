@@ -17,7 +17,14 @@ export const PropertyProfile = ({ property }: Props) => {
   const toast = useRef<any>(null);
 
   const copyLink = () => {
-    let text = window.location.href + `?agent=${user.id}`;
+    let url = window.location.href;
+    let text = ""
+    if (url.indexOf('?') > 0) {
+      text = url ;
+    }else{
+      text = url + `?agent=${user.id}`;
+    }
+
     navigator.clipboard.writeText(text);
     toast.current.show({ severity: 'success', summary: '¡Copiado!', detail: 'Link copiado al portapapeles', life: 3000 });
   }

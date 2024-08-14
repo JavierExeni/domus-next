@@ -1,5 +1,6 @@
 "use client";
 
+import { propertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
 import { agentsDatosContext } from "@/app/(main)/agentes/layout";
 import { propertiesDatosContext, usePropertiesContext } from "@/app/(main)/propiedades/layout";
 import { Paginator } from "primereact/paginator";
@@ -8,7 +9,7 @@ import { useEffect, useState } from "react";
 interface Props {
   count: number;
   rows: number;
-  context?: propertiesDatosContext | agentsDatosContext;
+  context?: propertiesDatosContext | agentsDatosContext | propertiesByAgentDatosContext;
 }
 
 export const BottomListPagination = ({ count, rows, context }: Props) => {

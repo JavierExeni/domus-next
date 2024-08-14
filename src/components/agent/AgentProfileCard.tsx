@@ -1,4 +1,6 @@
-import { Employee } from "@/types";
+"use client"
+
+import { usePropertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
 import Image from "next/image";
 import {
   FaFacebookF,
@@ -7,21 +9,16 @@ import {
   FaWhatsapp,
 } from "react-icons/fa6";
 
-interface Props {
-  agent: Employee;
-}
+export const AgentProfileCard = () => {
+  const {agent} = usePropertiesByAgentDatosContext();
 
-export const AgentProfileCard = ({ agent }: Props) => {
+  if (!agent) return null;
   return (
     <div className="relative flex flex-col w-max bg-white border border-gray-200 rounded-lg shadow-sm m-auto gap-0 h-auto">
       <div>
         <Image
           className="object-cover rounded-lg w-[250px] m-4"
-          src={
-            agent.image_profile
-              ? agent.image_profile
-              : "images/image-profile.webp"
-          }
+          src={agent?.image_profile || "images/image-profile.webp"}
           width={250}
           height={250}
           alt="image profile"
@@ -29,7 +26,7 @@ export const AgentProfileCard = ({ agent }: Props) => {
       </div>
       <div className="flex flex-col justify-between px-4 py-4 pt-0 leading-normal w-full">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">
-          {agent.first_name} {agent.last_name}
+          {agent?.first_name || "hola"} {agent?.last_name || "mundo"}
         </h5>
         <p className="mb-3 text-sm">
           <span>Agente Firma Propiedades </span>

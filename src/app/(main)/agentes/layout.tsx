@@ -36,7 +36,6 @@ export function AgentsProvider(
     });
     const [cities, setCities] = useState([] as City[]);
     const [filterBody, setFilterBody] = useState<any>(null);
-    const [changeCity, setChangeCity] = useState(false);
 
     async function getCities() {
         const cities = await CitiesService.getCities();
@@ -61,20 +60,7 @@ export function AgentsProvider(
         return agents;
     }
 
-    // async function getAgents() {
-    //     const agents: PaginatedResponse<Employee> = await AgentService.getAgentListPaginated(page, filterBody);
-    //     setAgents(agents);
-    // }
-
     useEffect(() => {
-        // if (typeof window !== 'undefined') {
-        //     setFilterBody({
-        //         full_name : '',
-        //         city_id : null,
-        //         role : 2,
-        //         page: 1
-        //     });
-        // }
         if (typeof window !== 'undefined') {
             const savedFilterBody = localStorage.getItem('filtroAgents');
 

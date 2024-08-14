@@ -4,12 +4,10 @@ import { useState } from "react";
 import { Employee } from "@/types";
 import { ContactService } from "@/services/parameter/contact-service";
 import Swal from "sweetalert2";
+import { usePropertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
 
-interface Props {
-  agent: Employee;
-}
-
-export const AgentContactForm = ({ agent }: Props) => {
+export const AgentContactForm = () => {
+  const {agent} = usePropertiesByAgentDatosContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const [formValues, setFormValues] = useState({
@@ -78,6 +76,8 @@ export const AgentContactForm = ({ agent }: Props) => {
       });
     }
   };
+
+  if (!agent) return null;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">

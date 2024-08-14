@@ -68,7 +68,7 @@ export const AgentCard = ({ agent }: Props) => {
             <p className="font-semibold">{agent.email}</p>
           </div>
           <Link
-            href={`/propiedades/agente/${agent.id}`}
+            href={`/agente/${agent.id}`}
             onClick={() => goToAgent(agent.id)}
             className="mt-4 inline-flex cursor-pointer items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#ecc17d] rounded-lg hover:bg-[#e1b878] focus:ring-4 focus:outline-none focus:ring-blue-300"
           >

@@ -1,21 +1,23 @@
 "use client";
 import { TopListPaginator } from "../properties/TopListPaginator";
-import { PaginatedResponse, Property } from "@/types";
-import { PropertyCard } from "../properties/PropertyCard";
+import { PropertyCardByAgent } from "../properties/PropertyCard";
 import { EmptyListMessage } from "../ui/empty-list-message/EmptyListMessage";
 import { BottomListPagination } from "../properties/BottomListPagination";
 import { FaFilter } from "react-icons/fa6";
-import ReduxProvider from "@/providers/redux-provider";
 import useUserInfo from "@/hooks/useUserInfo";
-import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
+import { usePropertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
+import { Sidebar } from "primereact/sidebar";
+import { useState } from "react";
+import { PropertyFilterForm } from "../properties/PropertyFilterForm";
+import { AgentPropertyFilterForm } from "./AgentPropertyFilterForm";
+import { AgentTagFilter } from "./AgentTagFilter";
 
-interface Props {
-  properties: PaginatedResponse<Property>;
-}
+export const AgentPropertyList = () => {
 
-export const AgentPropertyList = ({ properties }: Props) => {
+  const { properties } = usePropertiesByAgentDatosContext();
+  const { user, isLogged } = useUserInfo();
 
-  const { isLogged } = useUserInfo();
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   return (
     <>
@@ -25,28 +27,31 @@ export const AgentPropertyList = ({ properties }: Props) => {
             Listado de Propiedades
           </h1>
           <div className="w-full bg-white border grid grid-cols-[auto_1fr] items-center gap-5 border-gray-200 rounded-lg shadow-sm py-3 my-4 md:p-4 sticky top-2 z-40 max-h-[200px] overflow-y-auto">
-            <a className="text-white cursor-pointer bg-[#1e3a58] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center">
+            <a onClick={() => setSidebarVisible(!sidebarVisible)} className="text-white cursor-pointer bg-[#1e3a58] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center">
               <FaFilter className="w-5 h-5 flex items-center justify-center" />
               <span>Filtros</span>
             </a>
-            <TopListPaginator count={properties.count} />
+            <TopListPaginator count={properties.count} context={usePropertiesByAgentDatosContext()} />
 
-            {/* Generic Tag Filter */}
+            <AgentTagFilter />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-5 w-full">
           {!!properties.results ? (
             properties.results.map((property) => (
-              <PropertyCard key={property.id} property={property} isLogged={isLogged} />
+              <PropertyCardByAgent key={property.id} property={property} isLogged={isLogged} userLogged={user} />
             ))
           ) : (
             <EmptyListMessage message="No se encontraron propiedades registradas." />
           )}
         </div>
 
-        <BottomListPagination count={properties.count} rows={10} />
+        <BottomListPagination count={properties.count} rows={10} context={usePropertiesByAgentDatosContext()} />
       </div>
+      <Sidebar visible={sidebarVisible} onHide={() => setSidebarVisible(false)}>
+        <AgentPropertyFilterForm />
+      </Sidebar>
     </>
   );
 };

@@ -1,17 +1,19 @@
 'use client';
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { City, Feature, PaginatedResponse, Property, Zone } from '@/types';
-import { MobileFilterOption } from '@/components/properties/MobileFilterOption';
-import { PropertyFilterForm, PropertyList } from '@/components';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { City, Employee, Feature, PaginatedResponse, Property, Zone } from '@/types';
+import { AgentContactForm, AgentProfileCard, PropertyFilterForm } from '@/components';
 import ReduxProvider from '@/providers/redux-provider';
 import { CitiesService } from '@/services/parameter/cities-service';
 import { FeaturesService } from '@/services/parameter/features-service';
 import { PropertyService } from '@/services/property/property-service';
+import { AgentService } from '@/services/users/agent-service';
+import { Sidebar } from 'primereact/sidebar';
 
-export interface propertiesDatosContext {
+export interface propertiesByAgentDatosContext {
     properties: PaginatedResponse<Property>,
     cities: City[],
     zones: Zone[],
+    agent: Employee,
     changeCity: boolean,
     features: Feature[],
     page: number,
@@ -21,29 +23,31 @@ export interface propertiesDatosContext {
     setProperties: any,
     setChangeCity: any,
 }
-const propertiesContext = createContext({} as propertiesDatosContext);
+const propertiesByAgentDatosContext = createContext({} as propertiesByAgentDatosContext);
 
 export default function layout(
     { children }: { children: React.ReactNode }
 ) {
     return (
-        <PropertiesProvider>
-            <div className="w-[90%] xl:w-[85%] m-auto">
-                <MobileFilterOption />
-                <div className="lg:flex lg:items-start">
-                    <div className="bg-white border border-gray-200 rounded-md w-[300px] p-4 hidden responsive-filter my-6 mr-10 sticky top-2 z-40">
-                        <PropertyFilterForm />
-                    </div>
-                    <ReduxProvider>
-                        {children}
-                    </ReduxProvider>
+        <PropertiesByAgentProvider>
+            <div className="w-[90%] xl:w-[85%] m-auto py-4 flex gap-4">
+                <div className="self-start flex-col gap-3 hidden xl:flex">
+                    {/* Profile Card */}
+                    <AgentProfileCard />
+
+                    {/* Contact Form */}
+                    <AgentContactForm />
                 </div>
+                <ReduxProvider>
+                    {children}
+                    {/* <AgentPropertyList properties={properties} /> */}
+                </ReduxProvider>
             </div>
-        </PropertiesProvider>
+        </PropertiesByAgentProvider>
     )
 }
 
-export function PropertiesProvider(
+export function PropertiesByAgentProvider(
     { children }: { children: React.ReactNode }
 ) {
     const [properties, setProperties] = useState<PaginatedResponse<Property>>({
@@ -55,20 +59,11 @@ export function PropertiesProvider(
     const [cities, setCities] = useState([] as City[]);
     const [zones, setZones] = useState([] as Zone[]);
     const [features, setFeatures] = useState([] as Feature[]);
+    const [agent, setAgent] = useState<Employee | null>(null);
 
     const [filterBody, setFilterBody] = useState<any>(null);
 
     const [changeCity, setChangeCity] = useState(false);
-
-    async function getCities() {
-        const cities = await CitiesService.getCities();
-        setCities(cities);
-    }
-
-    async function getFeatures() {
-        const features = await FeaturesService.getFeatures();
-        setFeatures(features)
-    }
 
     const filterDefault = {
         value: "",
@@ -87,6 +82,21 @@ export function PropertiesProvider(
         page: 1
     }
 
+    async function getCities() {
+        const cities = await CitiesService.getCities();
+        setCities(cities);
+    }
+
+    async function getFeatures() {
+        const features = await FeaturesService.getFeatures();
+        setFeatures(features)
+    }
+
+    const getAgent = async (id: number) => {
+        const agent = await AgentService.getSingleAgent(id);
+        return agent;
+    }
+
     const getProperties = async (): Promise<PaginatedResponse<Property>> => {
         if (!filterBody) {
             return {
@@ -97,7 +107,7 @@ export function PropertiesProvider(
             }
         }
         const body = {
-            agent: null,
+            agent: filterBody.agent,
             area_max: filterBody.areaMax,
             area_min: filterBody.areaMin,
             city: filterBody.selectedCity,
@@ -146,29 +156,30 @@ export function PropertiesProvider(
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            
-            // limpiar filtros de agentes (si existen)
-            const filterAgent = localStorage.getItem('filtroAgents');
-            if (filterAgent) {
-                localStorage.removeItem('filtroAgents');
-                localStorage.removeItem('lastVisitedAgent');
-            }
-
             const savedFilterBody = localStorage.getItem('filtro');
 
-            if (savedFilterBody) {
-                console.log("savedFilterBody", savedFilterBody);
-                if (savedFilterBody.includes("agent")) {
-                    localStorage.removeItem('filtro');
-                    localStorage.removeItem('lastVisited');
-                    setFilterBody(filterDefault);
-                }else{
-                    setFilterBody(JSON.parse(savedFilterBody));
+            //agente/1
+            // obtener el id del agente de la url
+            const url = window.location.pathname;
+            const id = url.split("/")[2];
+
+            getAgent(Number(id)).then((agent) => {
+                setAgent(agent);
+
+                if (savedFilterBody) {
+                    console.log("savedFilterBody", savedFilterBody);
+                    // validar si no tiene agent en savedFilterBody
+                    if (!savedFilterBody.includes("agent")) {
+                        localStorage.removeItem('filtro');
+                        localStorage.removeItem('lastVisited');
+                        setFilterBody({...filterDefault, agent: agent ? agent.id : null});
+                    }else{
+                        setFilterBody(JSON.parse(savedFilterBody));
+                    }
+                } else {
+                    setFilterBody({...filterDefault, agent: agent ? agent.id : null});
                 }
-                
-            } else {
-                setFilterBody(filterDefault);
-            }
+            });
         }
         getCities();
         getFeatures();
@@ -176,6 +187,7 @@ export function PropertiesProvider(
 
     const datos = {
         properties: properties,
+        agent: agent,
         cities: cities,
         zones: zones,
         features: features,
@@ -184,15 +196,15 @@ export function PropertiesProvider(
         setFilterBody: setFilterBody,
         setProperties: setProperties,
         setChangeCity: setChangeCity,
-    } as propertiesDatosContext;
+    } as propertiesByAgentDatosContext;
 
     return (
-        <propertiesContext.Provider value={datos}>
+        <propertiesByAgentDatosContext.Provider value={datos}>
             {children}
-        </propertiesContext.Provider>
+        </propertiesByAgentDatosContext.Provider>
     )
 }
 
-export const usePropertiesContext = () => {
-    return useContext(propertiesContext);
+export const usePropertiesByAgentDatosContext = () => {
+    return useContext(propertiesByAgentDatosContext);
 };
