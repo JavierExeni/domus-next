@@ -8,9 +8,8 @@ import useUserInfo from "@/hooks/useUserInfo";
 import { usePropertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
 import { Sidebar } from "primereact/sidebar";
 import { useState } from "react";
-import { PropertyFilterForm } from "../properties/PropertyFilterForm";
 import { AgentPropertyFilterForm } from "./AgentPropertyFilterForm";
-import { AgentTagFilter } from "./AgentTagFilter";
+import { TagFilter } from "../properties/TagFilter";
 
 export const AgentPropertyList = () => {
 
@@ -33,7 +32,7 @@ export const AgentPropertyList = () => {
             </a>
             <TopListPaginator count={properties.count} context={usePropertiesByAgentDatosContext()} />
 
-            <AgentTagFilter />
+            <TagFilter context={usePropertiesByAgentDatosContext()}  />
           </div>
         </div>
 

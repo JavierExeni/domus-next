@@ -53,8 +53,7 @@ export const ContractType = () => {
                   selectedCategories: null,
                   selectedTypes: [type.id],
                   selectedFeatures: null,
-                  page: 1,
-                  agent : null
+                  page: 1
                 }
                 localStorage.setItem("filtro", JSON.stringify(filterBody));
                 window.location.href = "/propiedades";

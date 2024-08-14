@@ -1,11 +1,16 @@
 "use client";
-import { usePropertiesContext } from "@/app/(main)/propiedades/layout";
+import { propertiesByAgentDatosContext } from "@/app/(main)/agente/[id]/layout";
+import { propertiesDatosContext, usePropertiesContext } from "@/app/(main)/propiedades/layout";
 import { Tag } from "primereact/tag";
 import { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 
-export const TagFilter = () => {
-    const { filterBody } = usePropertiesContext();
+interface Props {
+    context: propertiesDatosContext | propertiesByAgentDatosContext;
+}
+
+export const TagFilter = ({context} : Props) => {
+    const filterBody = context.filterBody;
     const [chips, setChips] = useState<any>([]);
 
     // TODO: Refactor this function

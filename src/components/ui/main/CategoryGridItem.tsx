@@ -28,8 +28,7 @@ export const CategoryGridItem = ({ id, title, icon, image }: Props) => {
           selectedCategories: [id],
           selectedTypes: null,
           selectedFeatures: null,
-          page: 1,
-          agent : null
+          page: 1
         }
         localStorage.setItem("filtro", JSON.stringify(filterBody));
       }}

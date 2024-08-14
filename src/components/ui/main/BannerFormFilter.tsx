@@ -78,8 +78,7 @@ export const BannerFormFilter = () => {
       selectedCategories: null,
       selectedTypes: null,
       selectedFeatures: null,
-      page: 1,
-      agent: null
+      page: 1
     });
   }, []);
 
